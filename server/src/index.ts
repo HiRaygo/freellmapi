@@ -8,9 +8,9 @@ async function main() {
   initDb();
   const app = createApp();
 
-  app.listen(Number(PORT), '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
-    console.log(`Proxy endpoint: http://0.0.0.0:${PORT}/v1/chat/completions`);
+  app.listen(Number(PORT), '127.0.0.1', () => {
+    console.log(`Server running on http://127.0.0.1:${PORT}`);
+    console.log(`Proxy endpoint: http://127.0.0.1:${PORT}/v1/chat/completions`);
     startHealthChecker();
   });
 }
