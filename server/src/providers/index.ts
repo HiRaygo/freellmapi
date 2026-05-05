@@ -2,7 +2,6 @@ import type { Platform } from '@freellmapi/shared/types.js';
 import type { BaseProvider } from './base.js';
 import { GoogleProvider } from './google.js';
 import { OpenAICompatProvider } from './openai-compat.js';
-import { CohereProvider } from './cohere.js';
 import { CloudflareProvider } from './cloudflare.js';
 import { HuggingFaceProvider } from './huggingface.js';
 
@@ -22,20 +21,6 @@ register(new OpenAICompatProvider({
   baseUrl: 'https://api.groq.com/openai/v1',
 }));
 
-// Cerebras - OpenAI-compatible
-register(new OpenAICompatProvider({
-  platform: 'cerebras',
-  name: 'Cerebras',
-  baseUrl: 'https://api.cerebras.ai/v1',
-}));
-
-// SambaNova - OpenAI-compatible
-register(new OpenAICompatProvider({
-  platform: 'sambanova',
-  name: 'SambaNova',
-  baseUrl: 'https://api.sambanova.ai/v1',
-}));
-
 // NVIDIA NIM - OpenAI-compatible
 register(new OpenAICompatProvider({
   platform: 'nvidia',
@@ -43,12 +28,6 @@ register(new OpenAICompatProvider({
   baseUrl: 'https://integrate.api.nvidia.com/v1',
 }));
 
-// Mistral - OpenAI-compatible
-register(new OpenAICompatProvider({
-  platform: 'mistral',
-  name: 'Mistral',
-  baseUrl: 'https://api.mistral.ai/v1',
-}));
 
 // OpenRouter - OpenAI-compatible with extra headers
 register(new OpenAICompatProvider({
@@ -67,9 +46,6 @@ register(new OpenAICompatProvider({
   name: 'GitHub Models',
   baseUrl: 'https://models.inference.ai.azure.com',
 }));
-
-// Cohere - OpenAI-compatible via Cohere compatibility endpoint
-register(new CohereProvider());
 
 // Cloudflare Workers AI - OpenAI-compatible endpoint (key = "account_id:token")
 register(new CloudflareProvider());
@@ -96,6 +72,13 @@ register(new OpenAICompatProvider({
   platform: 'minimax',
   name: 'MiniMax',
   baseUrl: 'https://api.minimax.io/v1',
+}));
+
+// SenseNova - OpenAI-compatible
+register(new OpenAICompatProvider({
+  platform: 'sensenova',
+  name: 'SenseNova',
+  baseUrl: 'https://token.sensenova.cn/v1',
 }));
 
 export function getProvider(platform: Platform): BaseProvider | undefined {

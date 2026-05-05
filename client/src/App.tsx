@@ -75,10 +75,10 @@ function App() {
             <div className="max-w-6xl mx-auto px-6 flex items-center">
               <Brand />
               <nav className="flex items-center gap-6 ml-10">
-                <NavItem to="/playground">Playground</NavItem>
-                <NavItem to="/keys">Keys</NavItem>
-                <NavItem to="/fallback">Fallback</NavItem>
-                <NavItem to="/analytics">Analytics</NavItem>
+                <NavItem to="/playground">活动空间</NavItem>
+                <NavItem to="/keys">密钥</NavItem>
+                <NavItem to="/fallback">备用链</NavItem>
+                <NavItem to="/analytics">分析</NavItem>
               </nav>
               <div className="ml-auto py-2">
                 <DarkModeToggle />

@@ -131,31 +131,23 @@ function seedModels(db: Database.Database) {
     ['openrouter', 'moonshotai/kimi-k2:free', 'Kimi K2 (free)', 2, 9, 'Frontier', 20, 200, null, null, '~6M', 131072],
     ['openrouter', 'qwen/qwen3-coder:free', 'Qwen3 Coder (free)', 3, 9, 'Frontier', 20, 200, null, null, '~6M', 262144],
     ['openrouter', 'z-ai/glm-4.5-air:free', 'GLM-4.5 Air (free)', 4, 9, 'Large', 20, 200, null, null, '~6M', 131072],
-    // Cerebras — same 30 RPM / 1M TPD free pool; adding frontier coder, Llama 4 Maverick, GPT-OSS
-    ['cerebras', 'qwen-3-coder-480b', 'Qwen3-Coder 480B', 2, 1, 'Frontier', 30, null, 60000, 1000000, '~30M', 131072],
-    ['cerebras', 'llama-4-maverick-17b-128e-instruct', 'Llama 4 Maverick', 3, 1, 'Frontier', 30, null, 60000, 1000000, '~30M', 131072],
-    ['cerebras', 'qwen3-235b', 'Qwen3 235B', 3, 1, 'Large', 30, null, 60000, 1000000, '~30M', 8192],
-    ['cerebras', 'gpt-oss-120b', 'GPT-OSS 120B', 3, 1, 'Large', 30, null, 60000, 1000000, '~30M', 131072],
     // GitHub Models — GPT-4o replaced with GPT-5 (same free tier key)
     ['github', 'openai/gpt-5', 'GPT-5 (GitHub)', 1, 7, 'Frontier', 10, 50, null, null, '~18M', 128000],
-    // SambaNova — 70B RPM bumped to 20
-    ['sambanova', 'Meta-Llama-3.3-70B-Instruct', 'Llama 3.3 70B', 6, 9, 'Large', 20, null, null, 200000, '~6M', 8192],
-    // Mistral — Experiment pool ~1B tokens/mo shared across all models
-    ['mistral', 'mistral-large-latest', 'Mistral Large 3', 7, 8, 'Large', 2, null, 500000, null, '~50-100M', 131072],
-    ['mistral', 'magistral-medium-latest', 'Magistral Medium', 4, 8, 'Large', 2, null, 500000, null, '~50-100M', 40000],
-    ['mistral', 'codestral-latest', 'Codestral', 6, 6, 'Medium', 2, null, 500000, null, '~50-100M', 32000],
+    // SenseNova
+    ['sensenova', 'sensenova-6.7-flash-lite', 'Sensenova-6.7 Flash', 6, 9, 'Large', 30, null, null, 200000, '~6M', 131072],
+    ['sensenova', 'sensenova-u1-fast', 'Sensenova U1 Fast', 6, 9, 'Large', 30, null, null, 200000, '~6M', 131072],
+    ['sensenova', 'deepseek-v4-flash', 'DeepSeek-v4 Flash', 1, 9, 'Large', 15, null, null, 200000, '~6M', 131072],
     // Groq — scout TPM corrected to 6k (not 30k)
     ['groq', 'llama-3.3-70b-versatile', 'Llama 3.3 70B', 9, 2, 'Medium', 30, 1000, 6000, 500000, '~15M', 131072],
     ['groq', 'llama-4-scout-17b-16e-instruct', 'Llama 4 Scout', 10, 2, 'Medium', 30, 1000, 6000, 1000000, '~30M', 131072],
     // NVIDIA NIM — moved to credit-based model in 2025; no longer truly recurring monthly. Disabled by default.
     ['nvidia', 'meta/llama-3.1-70b-instruct', 'Llama 3.1 70B (NV)', 11, 6, 'Large', 40, null, null, null, 'credits-based', 131072],
-    // Cohere — trial tier is 1000 calls/mo total → realistic budget 1-2M
-    ['cohere', 'command-r-plus-08-2024', 'Command R+ (08-2024)', 12, 11, 'Large', 20, 33, null, null, '~1-2M', 131072],
     ['cloudflare', '@cf/meta/llama-3.1-70b-instruct', 'Llama 3.1 70B (CF)', 13, 11, 'Medium', null, null, null, null, '~18-45M', 131072],
     // Hugging Face — free Inference credits are ~$0.10/mo → budget closer to 1-3M on a 70B model
     ['huggingface', 'accounts/fireworks/models/llama-v3p3-70b-instruct', 'Llama 3.3 70B (HF)', 14, 11, 'Medium', null, null, null, null, '~1-3M', 131072],
     // New providers — recurring monthly free tiers, no card required
-    ['zhipu', 'glm-4.5-flash', 'GLM-4.5 Flash', 5, 4, 'Large', null, null, null, 1000000, '~30M', 131072],
+    ['zhipu', 'glm-4.5-flash', 'GLM-4.5 Flash', 5, 4, 'Large', 40, null, null, 1000000, '~30M', 131072],
+    ['zhipu', 'glm-4.7-flash', 'GLM-4.7 Flash', 8, 4, 'Large', 30, null, null, 1000000, '~30M', 131072],
     ['moonshot', 'kimi-latest', 'Kimi Latest', 4, 8, 'Large', 60, null, null, 500000, '~15M', 200000],
     ['minimax', 'MiniMax-M1', 'MiniMax M1', 5, 8, 'Large', 20, null, 1000000, null, '~30M', 200000],
   ];
@@ -220,18 +212,11 @@ function migrateModels(db: Database.Database) {
   `);
 
   const newModels: Array<[string, string, string, number, number, string, number | null, number | null, number | null, number | null, string, number | null]> = [
-    // Cerebras — same free pool as qwen3-235b
-    ['cerebras', 'qwen-3-coder-480b', 'Qwen3-Coder 480B', 2, 1, 'Frontier', 30, null, 60000, 1000000, '~30M', 131072],
-    ['cerebras', 'llama-4-maverick-17b-128e-instruct', 'Llama 4 Maverick', 3, 1, 'Frontier', 30, null, 60000, 1000000, '~30M', 131072],
-    ['cerebras', 'gpt-oss-120b', 'GPT-OSS 120B', 3, 1, 'Large', 30, null, 60000, 1000000, '~30M', 131072],
     // OpenRouter free tier
     ['openrouter', 'deepseek/deepseek-v3.1:free', 'DeepSeek V3.1 (free)', 2, 10, 'Frontier', 20, 200, null, null, '~6M', 131072],
     ['openrouter', 'moonshotai/kimi-k2:free', 'Kimi K2 (free)', 2, 9, 'Frontier', 20, 200, null, null, '~6M', 131072],
     ['openrouter', 'qwen/qwen3-coder:free', 'Qwen3 Coder (free)', 3, 9, 'Frontier', 20, 200, null, null, '~6M', 262144],
     ['openrouter', 'z-ai/glm-4.5-air:free', 'GLM-4.5 Air (free)', 4, 9, 'Large', 20, 200, null, null, '~6M', 131072],
-    // Mistral Experiment pool — shared ~1B/mo across models
-    ['mistral', 'magistral-medium-latest', 'Magistral Medium', 4, 8, 'Large', 2, null, 500000, null, '~50-100M', 40000],
-    ['mistral', 'codestral-latest', 'Codestral', 6, 6, 'Medium', 2, null, 500000, null, '~50-100M', 32000],
     // New providers
     ['zhipu', 'glm-4.5-flash', 'GLM-4.5 Flash', 5, 4, 'Large', null, null, null, 1000000, '~30M', 131072],
     ['moonshot', 'kimi-latest', 'Kimi Latest', 4, 8, 'Large', 60, null, null, 500000, '~15M', 200000],
@@ -275,11 +260,7 @@ function migrateModelsV2(db: Database.Database) {
   `);
   const removals: Array<[string, string]> = [
     // GitHub free tier does NOT include GPT-5 (only catalog-listed). Revert handled below.
-    // Cerebras: qwen-3-coder-480b and llama-4-maverick not on free tier; gpt-oss-120b is listed
     // but requires special access — our key gets 404. Remove all three.
-    ['cerebras', 'qwen-3-coder-480b'],
-    ['cerebras', 'llama-4-maverick-17b-128e-instruct'],
-    ['cerebras', 'gpt-oss-120b'],
     // These OpenRouter :free variants do not exist in the live catalog (April 2026)
     ['openrouter', 'deepseek/deepseek-v3.1:free'],
     ['openrouter', 'moonshotai/kimi-k2:free'],
@@ -349,22 +330,19 @@ function migrateModelsV3Ranks(db: Database.Database) {
     [2,  'openrouter',  'qwen/qwen3-coder:free'],                         // SWE-V ~70%
     [3,  'openrouter',  'qwen/qwen3-next-80b-a3b-instruct:free'],         // SWE-V ~70.6%
     [4,  'moonshot',    'kimi-latest'],                                   // K2: SWE-V ~71%
-    [5,  'cerebras',    'qwen-3-235b-a22b-instruct-2507'],                // SWE-V ~65-72%
-    [6,  'google',      'gemini-2.5-pro'],                                // SWE-V 63.8%, Aider 83%
-    [7,  'openrouter',  'z-ai/glm-4.5-air:free'],                         // ~58% SWE-V (distill of 4.5)
+    [5,  'sensenova',   'deepseek-v4-flash'],                             // K2: SWE-V ~71%
+    [6,  'nvidia',      'minimaxai/minimaxai-m2.7'],                   // older Llama 3.1 tune
+    [7,  'sensenova',   'sensenova-6.7-flash-lite'],   
     [8,  'openrouter',  'openai/gpt-oss-120b:free'],                      // SWE-V 62.4%
     [9,  'openrouter',  'nvidia/nemotron-3-super-120b-a12b:free'],        // SWE-V 53.7%
     [10, 'minimax',     'MiniMax-M1'],                                    // M1 predecessor, ~45-55%
     // #11-15 mid-tier specialists
-    [11, 'mistral',     'codestral-latest'],                              // HumanEval 86.6%
-    [12, 'mistral',     'mistral-large-latest'],
-    [13, 'mistral',     'magistral-medium-latest'],                       // reasoning, not code-tuned
-    [14, 'google',      'gemini-2.5-flash'],
-    [15, 'zhipu',       'glm-4.5-flash'],
+    [11, 'sensenova',   'sensenova-u1-fast'], 
+    [12, 'google',      'gemini-2.5-flash'],
+    [13, 'zhipu',       'glm-4.7-flash'],
     // #16 Llama 3.3 70B — identical weights across providers (tie)
-    [16, 'groq',        'llama-3.3-70b-versatile'],
-    [16, 'sambanova',   'Meta-Llama-3.3-70B-Instruct'],
-    [16, 'openrouter',  'meta-llama/llama-3.3-70b-instruct:free'],
+    [14, 'groq',        'llama-3.3-70b-versatile'],
+    [15, 'openrouter',  'meta-llama/llama-3.3-70b-instruct:free'],
     [16, 'huggingface', 'accounts/fireworks/models/llama-v3p3-70b-instruct'],
     // #17-23 weaker
     [17, 'openrouter',  'nousresearch/hermes-3-llama-3.1-405b:free'],     // L3.1 base with tool-use tune
@@ -374,7 +352,6 @@ function migrateModelsV3Ranks(db: Database.Database) {
     [21, 'github',      'gpt-4o'],                                        // Aug 2024, SWE-V ~33%
     [22, 'nvidia',      'meta/llama-3.1-70b-instruct'],                   // older Llama 3.1 tune
     [22, 'cloudflare',  '@cf/meta/llama-3.1-70b-instruct'],               // same base weights
-    [23, 'cohere',      'command-r-plus-08-2024'],                        // RAG-focused, weakest on code
   ];
   const apply = db.transaction(() => {
     for (const [rank, platform, modelId] of ranks) {
@@ -390,7 +367,7 @@ function migrateModelsV3Ranks(db: Database.Database) {
  * that return a structured tool_calls response and are reachable on the free tier.
  *
  * Adds SambaNova DeepSeek/Llama-4/gpt-oss, Groq gpt-oss & qwen3-32b, OpenRouter
- * ling-2.6-flash + nemotron-nano + gpt-oss + trinity, Mistral devstral/medium,
+ * ling-2.6-flash + nemotron-nano + gpt-oss + trinity,
  * GitHub gpt-4.1, Cohere command-a, Cloudflare llama-4/gpt-oss/glm-4.7. Removes
  * moonshot/kimi (paid-only now), minimax/M1 (superseded), HF/Fireworks route
  * (no structured tools), OR/gemma-4 (weak at tools). Renames CF llama-3.1 → 3.3
@@ -430,7 +407,6 @@ function migrateModelsV4(db: Database.Database) {
   // 3) Field corrections verified via primary sources + live probe
   db.prepare(`UPDATE models SET tpm_limit = 12000 WHERE platform = 'groq' AND model_id = 'llama-3.3-70b-versatile'`).run();
   db.prepare(`UPDATE models SET rpd_limit = 20 WHERE platform = 'sambanova' AND model_id = 'Meta-Llama-3.3-70B-Instruct'`).run();
-  db.prepare(`UPDATE models SET rpd_limit = 14400 WHERE platform = 'cerebras' AND model_id = 'qwen-3-235b-a22b-instruct-2507'`).run();
   db.prepare(`UPDATE models SET rpd_limit = 250, monthly_token_budget = '~25M' WHERE platform = 'google' AND model_id = 'gemini-2.5-flash'`).run();
   // gemini-2.5-pro is at-risk: April 2026 Google moved Pro-class off free tier in practice.
   // Our live probe hit "quota exceeded" immediately. Cut rpd in half to reduce 429 blast radius.
@@ -450,11 +426,10 @@ function migrateModelsV4(db: Database.Database) {
     ['openrouter', 'openai/gpt-oss-20b:free',                'GPT-OSS 20B (free)',            18, 9,  'Medium',   20, 200, null, null, '~6M', 131072],
     ['openrouter', 'meta-llama/llama-3.3-70b-instruct:free', 'Llama 3.3 70B (free)',          17, 9,  'Medium',   20, 200, null, null, '~6M', 131072],
 
-    // SambaNova — 20 RPM / 20 RPD / 200K TPD shared free Developer tier
-    ['sambanova',  'DeepSeek-V3.1',                          'DeepSeek V3.1',                 5,  9,  'Frontier', 20, 20,  null, 200000, '~3M', 131072],
-    ['sambanova',  'DeepSeek-V3.2',                          'DeepSeek V3.2',                 4,  9,  'Frontier', 20, 20,  null, 200000, '~3M', 131072],
-    ['sambanova',  'Llama-4-Maverick-17B-128E-Instruct',     'Llama 4 Maverick',              11, 9,  'Large',    20, 20,  null, 200000, '~3M', 8192],
-    ['sambanova',  'gpt-oss-120b',                           'GPT-OSS 120B (SambaNova)',      6,  9,  'Large',    20, 20,  null, 200000, '~3M', 131072],
+    // sensenova — 20 RPM / 20 RPD / 200K TPD shared free Developer tier
+    ['sensenova',  'deepseek-v4-flash',                       'deepseek-v4-flash',             5,  9,  'Frontier', 20, 20,  null, 200000, '~3M', 131072],
+    ['sensenova',  'sensenova-6.7-flash-lite',                'sensenova-6.7-flash-lite',      4,  9,  'Frontier', 20, 20,  null, 200000, '~3M', 131072],
+    ['sensenova',  'sensenova-u1-fast',                       'sensenova-u1-fast',             11, 9,  'Large',    20, 20,  null, 200000, '~3M', 8192],
 
     // Groq — very fast; 30 RPM per model, 1000 RPD on most, 14.4k on the 8B
     ['groq',       'openai/gpt-oss-120b',                    'GPT-OSS 120B (Groq)',           6,  2,  'Large',    30, 1000, 8000, 200000,  '~6M',  131072],
@@ -462,15 +437,8 @@ function migrateModelsV4(db: Database.Database) {
     ['groq',       'qwen/qwen3-32b',                         'Qwen3 32B (Groq)',              19, 2,  'Medium',   60, 1000, 6000, 500000,  '~15M', 131072],
     ['groq',       'llama-3.1-8b-instant',                   'Llama 3.1 8B Instant',          28, 2,  'Small',    30, 14400, 6000, 500000, '~15M', 131072],
 
-    // Mistral Experiment tier — shared 2 RPM / 500k TPM / 1B tokens/mo across all models
-    ['mistral',    'devstral-latest',                        'Devstral',                      16, 8,  'Medium',   2, null, 500000, null, '~50-100M', 131072],
-    ['mistral',    'mistral-medium-latest',                  'Mistral Medium 3.5',            14, 8,  'Large',    2, null, 500000, null, '~50-100M', 131072],
-
     // GitHub Models — Low-tier category (15 RPM / 150 RPD, 8K in / 4K out per call)
     ['github',     'openai/gpt-4.1',                         'GPT-4.1 (GitHub)',              20, 7,  'Large',    10, 50,  null, null, '~9M', 128000],
-
-    // Cohere — shared 1000 calls/mo trial pool, 20 RPM Chat
-    ['cohere',     'command-a-03-2025',                      'Command-A (03-2025)',           27, 11, 'Large',    20, 33,  null, null, '~1-2M', 131072],
 
     // Cloudflare Workers AI — shared 10K Neurons/day free pool across all @cf/* models
     ['cloudflare', '@cf/openai/gpt-oss-120b',                'GPT-OSS 120B (CF)',             6,  11, 'Large',    null, null, null, null, '~18-45M', 131072],
@@ -500,44 +468,29 @@ function migrateModelsV4(db: Database.Database) {
     [1,  'openrouter',  'minimax/minimax-m2.5:free'],
     [2,  'openrouter',  'qwen/qwen3-coder:free'],
     [3,  'openrouter',  'qwen/qwen3-next-80b-a3b-instruct:free'],
-    [4,  'sambanova',   'DeepSeek-V3.2'],
-    [5,  'sambanova',   'DeepSeek-V3.1'],
-    [6,  'cerebras',    'qwen-3-235b-a22b-instruct-2507'],
-    [6,  'openrouter',  'openai/gpt-oss-120b:free'],
-    [6,  'groq',        'openai/gpt-oss-120b'],
-    [6,  'sambanova',   'gpt-oss-120b'],
-    [6,  'cloudflare',  '@cf/openai/gpt-oss-120b'],
-    [7,  'openrouter',  'inclusionai/ling-2.6-flash:free'],
-    [8,  'openrouter',  'z-ai/glm-4.5-air:free'],
-    [10, 'cloudflare',  '@cf/zai-org/glm-4.7-flash'],
-    [11, 'sambanova',   'Llama-4-Maverick-17B-128E-Instruct'],
-    [12, 'groq',        'meta-llama/llama-4-scout-17b-16e-instruct'],
-    [12, 'cloudflare',  '@cf/meta/llama-4-scout-17b-16e-instruct'],
-    [13, 'openrouter',  'arcee-ai/trinity-large-preview:free'],
-    [14, 'google',      'gemini-2.5-pro'],
-    [14, 'mistral',     'mistral-large-latest'],
-    [14, 'mistral',     'mistral-medium-latest'],
-    [16, 'mistral',     'devstral-latest'],
-    [16, 'mistral',     'codestral-latest'],
+    [4,  'sensenova',   'deepseek-v4-flash'],
+    [5,  'sensenova',   'sensenova-6.7-flash-lite'],
+    [6,  'sensenova',   'sensenova-u1-fast'],
+    [7,  'zhipu',       'glm-4.7-flash'],
+    [8,  'openrouter',  'openai/gpt-oss-120b:free'],
+    [9,  'groq',        'openai/gpt-oss-120b'],
+    [10, 'cloudflare',  '@cf/openai/gpt-oss-120b'],
+    [11, 'openrouter',  'inclusionai/ling-2.6-flash:free'],
+    [12, 'openrouter',  'z-ai/glm-4.5-air:free'],
+    [13, 'cloudflare',  '@cf/zai-org/glm-4.7-flash'],
+    [14, 'cloudflare',  '@cf/meta/llama-4-scout-17b-16e-instruct'],
+    [15, 'openrouter',  'arcee-ai/trinity-large-preview:free'],
+    [16, 'google',      'gemini-2.5-pro'],
     [17, 'groq',        'llama-3.3-70b-versatile'],
-    [17, 'sambanova',   'Meta-Llama-3.3-70B-Instruct'],
-    [17, 'cloudflare',  '@cf/meta/llama-3.3-70b-instruct-fp8-fast'],
-    [17, 'openrouter',  'meta-llama/llama-3.3-70b-instruct:free'],
-    [17, 'nvidia',      'meta/llama-3.1-70b-instruct'],
-    [18, 'openrouter',  'openai/gpt-oss-20b:free'],
-    [18, 'groq',        'openai/gpt-oss-20b'],
-    [19, 'groq',        'qwen/qwen3-32b'],
-    [20, 'google',      'gemini-2.5-flash'],
-    [20, 'github',      'openai/gpt-4.1'],
-    [21, 'mistral',     'magistral-medium-latest'],
+    [18, 'openrouter',  'meta-llama/llama-3.3-70b-instruct:free'],
+    [19, 'nvidia',      'meta/llama-3.1-70b-instruct'],
+    [20, 'openrouter',  'openai/gpt-oss-20b:free'],
+    [21, 'github',      'openai/gpt-4.1'],
     [22, 'openrouter',  'nvidia/nemotron-3-super-120b-a12b:free'],
     [23, 'openrouter',  'nvidia/nemotron-3-nano-30b-a3b:free'],
     [24, 'zhipu',       'glm-4.5-flash'],
     [25, 'github',      'gpt-4o'],
     [26, 'google',      'gemini-2.5-flash-lite'],
-    [27, 'cohere',      'command-a-03-2025'],
-    [27, 'cohere',      'command-r-plus-08-2024'],
-    [28, 'groq',        'llama-3.1-8b-instant'],
   ];
   const applyRanks = db.transaction(() => {
     for (const [r, p, m] of ranks) setRank.run(r, p, m);
@@ -547,7 +500,7 @@ function migrateModelsV4(db: Database.Database) {
 
 /**
  * V5: Google moved all Pro-tier Gemini off the free tier on 2026-04-01 — disable
- * gemini-2.5-pro. Add Cerebras `zai-glm-4.7` (355B z.ai GLM preview, newly on
+ * gemini-2.5-pro. (355B z.ai GLM preview, newly on
  * free tier but throttled to 10 RPM / 100 RPD due to high demand; context capped
  * at 8192 on free tier).
  */
@@ -559,7 +512,7 @@ function migrateModelsV5(db: Database.Database) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const apply = db.transaction(() => {
-    insert.run('cerebras', 'zai-glm-4.7', 'GLM-4.7 (Cerebras)', 7, 1, 'Frontier', 10, 100, null, null, '~3M', 8192);
+    insert.run('zhipu', 'glm-4.7-flash', 'GLM-4.7-Flash', 7, 1, 'Frontier', 10, 100, null, null, '~3M', 8192);
     const missing = db.prepare(`
       SELECT m.id FROM models m
       LEFT JOIN fallback_config f ON m.id = f.model_db_id

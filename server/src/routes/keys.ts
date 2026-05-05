@@ -7,8 +7,8 @@ import { encrypt, decrypt, maskKey } from '../lib/crypto.js';
 export const keysRouter = Router();
 
 const PLATFORMS = [
-  'google', 'groq', 'cerebras', 'sambanova', 'nvidia', 'mistral',
-  'openrouter', 'github', 'huggingface', 'cohere', 'cloudflare', 'zhipu', 'moonshot', 'minimax',
+  'google', 'groq', 'sensenova', 'nvidia', 
+  'openrouter', 'github', 'huggingface', 'cloudflare', 'zhipu', 'moonshot', 'minimax',
 ] as const;
 
 const addKeySchema = z.object({

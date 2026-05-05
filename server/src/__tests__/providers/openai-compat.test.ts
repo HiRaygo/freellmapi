@@ -115,7 +115,6 @@ describe('OpenAICompatProvider - platform instances', () => {
   const platforms = [
     { platform: 'sambanova', name: 'SambaNova', baseUrl: 'https://api.sambanova.ai/v1' },
     { platform: 'nvidia', name: 'NVIDIA NIM', baseUrl: 'https://integrate.api.nvidia.com/v1' },
-    { platform: 'mistral', name: 'Mistral', baseUrl: 'https://api.mistral.ai/v1' },
     { platform: 'openrouter', name: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1' },
     { platform: 'github', name: 'GitHub Models', baseUrl: 'https://models.inference.ai.azure.com' },
     { platform: 'fireworks', name: 'Fireworks AI', baseUrl: 'https://api.fireworks.ai/inference/v1' },

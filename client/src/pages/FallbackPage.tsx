@@ -57,14 +57,11 @@ interface TokenUsageData {
 const platformColors: Record<string, string> = {
   google:      '#4285f4',
   groq:        '#f55036',
-  cerebras:    '#8b5cf6',
-  sambanova:   '#14b8a6',
+  sensenova:   '#8b5cf6',
   nvidia:      '#76b900',
-  mistral:     '#f59e0b',
   openrouter:  '#ec4899',
   github:      '#6e7b8b',
   huggingface: '#ffd21e',
-  cohere:      '#d946ef',
   cloudflare:  '#f38020',
   zhipu:       '#06b6d4',
   moonshot:    '#4f46e5',
@@ -88,9 +85,9 @@ function TokenUsageBar({ data }: { data: TokenUsageData }) {
   return (
     <section className="rounded-lg border bg-card p-5">
       <div className="flex items-baseline justify-between mb-3">
-        <h2 className="text-sm font-medium">Monthly token budget</h2>
+        <h2 className="text-sm font-medium">月度预算</h2>
         <span className="text-xs text-muted-foreground tabular-nums">
-          <span className="text-foreground font-medium">{formatTokens(remaining)}</span> remaining
+          <span className="text-foreground font-medium">{formatTokens(remaining)}</span> 剩余
           <span className="mx-1.5">·</span>
           {remainingPct}% of {formatTokens(totalBudget)}
         </span>
@@ -274,18 +271,18 @@ export default function FallbackPage() {
   return (
     <div>
       <PageHeader
-        title="Fallback chain"
-        description="Drag to reorder. Requests try models top-to-bottom until one succeeds."
+        title="备用链"
+        description="拖曳以重新排序。请求从上到下尝试模型，直到成功。"
         actions={
           <>
             <Button variant="outline" size="sm" onClick={() => sortMutation.mutate('intelligence')} disabled={sortMutation.isPending}>
-              Sort by intelligence
+              智能排序
             </Button>
             <Button variant="outline" size="sm" onClick={() => sortMutation.mutate('speed')} disabled={sortMutation.isPending}>
-              Sort by speed
+              按速度排序
             </Button>
             <Button variant="outline" size="sm" onClick={() => sortMutation.mutate('budget')} disabled={sortMutation.isPending}>
-              Sort by budget
+              按预算排序
             </Button>
           </>
         }
@@ -301,7 +298,7 @@ export default function FallbackPage() {
         ) : displayEntries.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center">
             <p className="text-sm text-muted-foreground">
-              No models available. Add API keys on the <a href="/keys" className="underline text-foreground">Keys page</a> first.
+              没有可用的模型，请先添加 <a href="/keys" className="underline text-foreground">密钥</a>
             </p>
           </div>
         ) : (
@@ -334,14 +331,14 @@ export default function FallbackPage() {
                   Discard
                 </Button>
                 <Button size="sm" onClick={handleSave} disabled={saveMutation.isPending}>
-                  {saveMutation.isPending ? 'Saving…' : 'Save order'}
+                  {saveMutation.isPending ? '保存中' : '保存'}
                 </Button>
               </div>
             )}
 
             {unconfiguredPlatforms.length > 0 && (
               <p className="text-xs text-muted-foreground">
-                Hidden (no keys): {unconfiguredPlatforms.join(', ')}
+                已隐藏 (无密钥): {unconfiguredPlatforms.join(', ')}
               </p>
             )}
           </>

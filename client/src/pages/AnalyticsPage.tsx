@@ -78,8 +78,8 @@ export default function AnalyticsPage() {
   return (
     <div>
       <PageHeader
-        title="Analytics"
-        description="Request volume, latency, token usage, and failures."
+        title="分析"
+        description="请求量、延迟、令牌使用和失败"
         actions={
           <div className="flex gap-1 rounded-md border p-0.5">
             {(['24h', '7d', '30d'] as TimeRange[]).map(r => (
@@ -99,18 +99,18 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         {/* Summary stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <Stat label="Requests" value={summary?.totalRequests ?? 0} />
-          <Stat label="Success rate" value={`${summary?.successRate ?? 0}%`} />
-          <Stat label="Input tokens" value={formatTokens(summary?.totalInputTokens)} />
-          <Stat label="Output tokens" value={formatTokens(summary?.totalOutputTokens)} />
-          <Stat label="Avg latency" value={`${summary?.avgLatencyMs ?? 0} ms`} />
-          <Stat label="Est. savings" value={`$${summary?.estimatedCostSavings ?? '0.00'}`} />
+          <Stat label="请求数" value={summary?.totalRequests ?? 0} />
+          <Stat label="成功率" value={`${summary?.successRate ?? 0}%`} />
+          <Stat label="输入词元" value={formatTokens(summary?.totalInputTokens)} />
+          <Stat label="输出词元" value={formatTokens(summary?.totalOutputTokens)} />
+          <Stat label="平均延迟" value={`${summary?.avgLatencyMs ?? 0} ms`} />
+          <Stat label="预估节省" value={`$${summary?.estimatedCostSavings ?? '0.00'}`} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Panel title="Requests by provider">
+          <Panel title="请求数">
             {byPlatform.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">No data yet</p>
+              <p className="text-sm text-muted-foreground text-center py-8">没有数据</p>
             ) : (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={byPlatform} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
@@ -124,9 +124,9 @@ export default function AnalyticsPage() {
             )}
           </Panel>
 
-          <Panel title="Avg latency by provider">
+          <Panel title="平均延迟">
             {byPlatform.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">No data yet</p>
+              <p className="text-sm text-muted-foreground text-center py-8">没有数据</p>
             ) : (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={byPlatform} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
@@ -141,9 +141,9 @@ export default function AnalyticsPage() {
           </Panel>
 
           <div className="lg:col-span-2">
-            <Panel title="Requests over time">
+            <Panel title="时间段的请求">
               {timeline.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">No data yet</p>
+                <p className="text-sm text-muted-foreground text-center py-8">没有数据</p>
               ) : (
                 <ResponsiveContainer width="100%" height={240}>
                   <LineChart data={timeline} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
@@ -161,21 +161,21 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="lg:col-span-2">
-            <Panel title="Per-model breakdown">
+            <Panel title="各模型细节">
               {byModel.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">No data yet</p>
+                <p className="text-sm text-muted-foreground text-center py-8">没有数据</p>
               ) : (
                 <div className="max-h-[360px] overflow-y-auto -mx-4">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="pl-4">Model</TableHead>
-                        <TableHead>Provider</TableHead>
-                        <TableHead className="text-right">Requests</TableHead>
-                        <TableHead className="text-right">Success</TableHead>
-                        <TableHead className="text-right">Latency</TableHead>
-                        <TableHead className="text-right">In tokens</TableHead>
-                        <TableHead className="text-right pr-4">Out tokens</TableHead>
+                        <TableHead className="pl-4">模型</TableHead>
+                        <TableHead>提供商</TableHead>
+                        <TableHead className="text-right">请求数</TableHead>
+                        <TableHead className="text-right">成功数</TableHead>
+                        <TableHead className="text-right">延迟</TableHead>
+                        <TableHead className="text-right">输入词元</TableHead>
+                        <TableHead className="text-right pr-4">输出词元</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -197,9 +197,9 @@ export default function AnalyticsPage() {
             </Panel>
           </div>
 
-          <Panel title="Errors by provider">
+          <Panel title="错误数">
             {!errorDist?.byPlatform?.length ? (
-              <p className="text-sm text-muted-foreground text-center py-8">No errors</p>
+              <p className="text-sm text-muted-foreground text-center py-8">没有错误</p>
             ) : (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={errorDist.byPlatform} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
@@ -213,17 +213,17 @@ export default function AnalyticsPage() {
             )}
           </Panel>
 
-          <Panel title="Recent errors">
+          <Panel title="最近错误">
             {errors.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">No errors</p>
+              <p className="text-sm text-muted-foreground text-center py-8">没有错误</p>
             ) : (
               <div className="max-h-[240px] overflow-y-auto -mx-4">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="pl-4">Provider</TableHead>
-                      <TableHead>Message</TableHead>
-                      <TableHead className="text-right pr-4">Time</TableHead>
+                      <TableHead className="pl-4">提供商</TableHead>
+                      <TableHead>错误信息</TableHead>
+                      <TableHead className="text-right pr-4">时间</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

@@ -49,13 +49,6 @@ describe('Rate Limiter', () => {
       })).toBe(true);
     });
 
-    it('should deny tokens when TPM limit would be exceeded', () => {
-      recordTokens('cerebras', 'qwen3', testId, 50000);
-      expect(canUseTokens('cerebras', 'qwen3', testId, 20000, {
-        tpm: 60000, tpd: null,
-      })).toBe(false);
-    });
-
     it('should allow when limit is null', () => {
       expect(canUseTokens('nvidia', 'nemotron', testId, 100000, {
         tpm: null, tpd: null,

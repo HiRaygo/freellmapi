@@ -133,14 +133,14 @@ export default function PlaygroundPage() {
   }
 
   const activeModelLabel = selectedModel === 'auto'
-    ? 'Auto (fallback chain)'
+    ? 'auto (fallback chain)'
     : availableModels.find(m => m.modelId === selectedModel)?.displayName ?? selectedModel
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <PageHeader
-        title="Playground"
-        description="Send a chat completion through the router and see which provider serves it."
+        title="活动空间"
+        description="通过路由器发送聊天完成，看看哪个运营商提供服务。"
         actions={
           <>
             <Select value={selectedModel} onValueChange={(v) => setSelectedModel(v ?? 'auto')}>
@@ -148,7 +148,7 @@ export default function PlaygroundPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="auto">Auto (fallback chain)</SelectItem>
+                <SelectItem value="auto">auto (fallback chain)</SelectItem>
                 {availableModels.map(m => (
                   <SelectItem key={m.modelDbId} value={m.modelId}>
                     <span className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export default function PlaygroundPage() {
             </Select>
             {messages.length > 0 && (
               <Button variant="outline" size="sm" onClick={handleClear}>
-                Clear
+                清除
               </Button>
             )}
           </>
@@ -173,9 +173,9 @@ export default function PlaygroundPage() {
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full text-center">
               <div className="space-y-2 max-w-sm">
-                <p className="text-base font-medium">Send a message to get started.</p>
+                <p className="text-base font-medium">发送消息开始吧</p>
                 <p className="text-sm text-muted-foreground">
-                  Using <span className="text-foreground">{activeModelLabel}</span>. Switch models in the selector above.
+                  正在使用 <span className="text-foreground">{activeModelLabel}</span>。在上方的选择器中切换模型。
                 </p>
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function PlaygroundPage() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Type a message… (⏎ to send, ⇧⏎ for newline)"
+              placeholder="输入消息… (⏎ 发送， ⇧⏎ 换行)"
               rows={1}
               className="flex-1 resize-none rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring/50 min-h-[40px] max-h-[160px]"
               style={{ height: 'auto', overflow: 'hidden' }}
@@ -238,7 +238,7 @@ export default function PlaygroundPage() {
               }}
             />
             <Button onClick={handleSend} disabled={loading || !input.trim()} size="default">
-              {loading ? 'Sending…' : 'Send'}
+              {loading ? '发送中…' : '发送'}
             </Button>
           </div>
         </div>

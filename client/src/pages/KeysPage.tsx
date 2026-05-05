@@ -11,14 +11,11 @@ import type { ApiKey, Platform } from '../../../shared/types'
 const PLATFORMS: { value: Platform; label: string }[] = [
   { value: 'google', label: 'Google AI Studio' },
   { value: 'groq', label: 'Groq' },
-  { value: 'cerebras', label: 'Cerebras' },
-  { value: 'sambanova', label: 'SambaNova' },
+  { value: 'sensenova', label: 'SenseNova' },
   { value: 'nvidia', label: 'NVIDIA NIM' },
-  { value: 'mistral', label: 'Mistral' },
   { value: 'openrouter', label: 'OpenRouter' },
   { value: 'github', label: 'GitHub Models' },
   { value: 'huggingface', label: 'Hugging Face' },
-  { value: 'cohere', label: 'Cohere' },
   { value: 'cloudflare', label: 'Cloudflare Workers AI' },
   { value: 'zhipu', label: 'Zhipu AI (Z.ai)' },
   { value: 'moonshot', label: 'Moonshot (Kimi)' },
@@ -84,9 +81,9 @@ function UnifiedKeySection() {
     <section className="rounded-lg border bg-card p-5">
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
-          <h2 className="text-sm font-medium">Your unified API key</h2>
+          <h2 className="text-sm font-medium">你的统一API密钥</h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Use this as your OpenAI <code className="font-mono">api_key</code>; it authenticates requests to this proxy.
+            把它作为你的OpenAI <code className="font-mono">api_key</code>; 它会对该代理进行认证请求。
           </p>
         </div>
         <Button
@@ -95,7 +92,7 @@ function UnifiedKeySection() {
           onClick={() => regenerate.mutate()}
           disabled={regenerate.isPending}
         >
-          Regenerate
+          重新生成
         </Button>
       </div>
 
@@ -104,10 +101,10 @@ function UnifiedKeySection() {
           {showKey ? apiKey : masked}
         </code>
         <Button variant="outline" size="sm" onClick={() => setShowKey(!showKey)}>
-          {showKey ? 'Hide' : 'Show'}
+          {showKey ? '隐藏' : '显示'}
         </Button>
         <Button variant="outline" size="sm" onClick={copy}>
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? '已复制' : '复制'}
         </Button>
       </div>
 
@@ -198,12 +195,12 @@ export default function KeysPage() {
   return (
     <div>
       <PageHeader
-        title="Keys"
-        description="Provider credentials and the unified API key your apps connect with."
+        title="密钥"
+        description="管理提供商凭证和你的应用连接的统一API密钥"
         actions={
           keys.length > 0 && (
             <Button variant="outline" size="sm" onClick={() => checkAll.mutate()} disabled={checkAll.isPending}>
-              {checkAll.isPending ? 'Checking…' : 'Check all'}
+              {checkAll.isPending ? '检查中…' : '检查'}
             </Button>
           )
         }
@@ -213,13 +210,13 @@ export default function KeysPage() {
         <UnifiedKeySection />
 
         <section>
-          <h2 className="text-sm font-medium mb-3">Add a provider key</h2>
+          <h2 className="text-sm font-medium mb-3">添加提供商凭证</h2>
           <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3 rounded-lg border p-4 bg-card">
             <div className="space-y-1.5">
-              <Label className="text-xs">Platform</Label>
+              <Label className="text-xs">平台</Label>
               <Select value={platform} onValueChange={(v) => setPlatform(v as Platform)}>
                 <SelectTrigger className="w-[220px]">
-                  <SelectValue placeholder="Select provider" />
+                  <SelectValue placeholder="选择提供商" />
                 </SelectTrigger>
                 <SelectContent>
                   {PLATFORMS.map(p => (
@@ -230,7 +227,7 @@ export default function KeysPage() {
             </div>
             {needsAccountId && (
               <div className="space-y-1.5">
-                <Label className="text-xs">Account ID</Label>
+                <Label className="text-xs">账号ID</Label>
                 <Input
                   value={accountId}
                   onChange={e => setAccountId(e.target.value)}
@@ -245,21 +242,21 @@ export default function KeysPage() {
                 type="password"
                 value={apiKey}
                 onChange={e => setApiKey(e.target.value)}
-                placeholder={needsAccountId ? 'Bearer token' : 'paste key here'}
+                placeholder={needsAccountId ? 'Bearer token' : '粘贴到这里'}
                 className="font-mono text-xs"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Label</Label>
+              <Label className="text-xs">标签</Label>
               <Input
                 value={label}
                 onChange={e => setLabel(e.target.value)}
-                placeholder="optional"
+                placeholder="可选"
                 className="w-[160px]"
               />
             </div>
             <Button type="submit" size="sm" disabled={!platform || !apiKey || (needsAccountId && !accountId) || addKey.isPending}>
-              {addKey.isPending ? 'Adding…' : 'Add key'}
+              {addKey.isPending ? '添加中' : '添加'}
             </Button>
           </form>
           {addKey.isError && (
@@ -268,13 +265,13 @@ export default function KeysPage() {
         </section>
 
         <section>
-          <h2 className="text-sm font-medium mb-3">Configured providers</h2>
+          <h2 className="text-sm font-medium mb-3">修改提供商配置</h2>
           {isLoading ? (
-            <p className="text-sm text-muted-foreground">Loading…</p>
+            <p className="text-sm text-muted-foreground">加载中</p>
           ) : keys.length === 0 ? (
             <div className="rounded-lg border border-dashed p-8 text-center">
               <p className="text-sm text-muted-foreground">
-                No provider keys yet. Add one above to start routing.
+                还没有提供者密钥。请在上方添加一个以启动路由。
               </p>
             </div>
           ) : (
@@ -284,7 +281,7 @@ export default function KeysPage() {
                   <div className="flex items-baseline justify-between mb-2">
                     <h3 className="text-sm font-medium">{group.label}</h3>
                     <span className="text-xs text-muted-foreground tabular-nums">
-                      {group.keys.length} key{group.keys.length === 1 ? '' : 's'}
+                      {group.keys.length} 个密钥{group.keys.length === 1 ? '' : 's'}
                     </span>
                   </div>
                   <div className="rounded-lg border divide-y bg-card overflow-hidden">
@@ -305,10 +302,10 @@ export default function KeysPage() {
                             </span>
                           )}
                           <Button variant="ghost" size="xs" onClick={() => checkKey.mutate(k.id)} disabled={checkKey.isPending}>
-                            Check
+                            检查
                           </Button>
                           <Button variant="ghost" size="xs" className="text-muted-foreground hover:text-destructive" onClick={() => deleteKey.mutate(k.id)} disabled={deleteKey.isPending}>
-                            Remove
+                            删除
                           </Button>
                         </div>
                       )

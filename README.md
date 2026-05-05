@@ -4,7 +4,7 @@
 
 **One OpenAI-compatible endpoint. Fourteen free LLM providers. ~1.3B+ tokens per month.**
 
-Aggregate the free tiers from Google, Groq, Cerebras, SambaNova, NVIDIA, Mistral, OpenRouter, GitHub Models, Hugging Face, Cohere, Cloudflare, Zhipu, Moonshot, and MiniMax behind a single `/v1/chat/completions` endpoint. Keys are stored encrypted. A router picks the best available model for each request, falls over to the next provider when one is rate-limited, and tracks per-key usage so you stay under every free-tier cap.
+Aggregate the free tiers from Google, Groq, SenseNova, NVIDIA, OpenRouter, GitHub Models, Hugging Face, Cloudflare, Zhipu, Moonshot, and MiniMax behind a single `/v1/chat/completions` endpoint. Keys are stored encrypted. A router picks the best available model for each request, falls over to the next provider when one is rate-limited, and tracks per-key usage so you stay under every free-tier cap.
 
 [![CI](https://github.com/tashfeenahmed/freellmapi/actions/workflows/ci.yml/badge.svg)](https://github.com/tashfeenahmed/freellmapi/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
@@ -43,25 +43,22 @@ The problem is that stacking them by hand is painful: fourteen different SDKs, f
 <tr>
 <td align="center" width="180"><a href="https://ai.google.dev"><b>Google</b><br/>Gemini 2.5 Pro / Flash</a></td>
 <td align="center" width="180"><a href="https://groq.com"><b>Groq</b><br/>Llama 4, Qwen, Kimi</a></td>
-<td align="center" width="180"><a href="https://cerebras.ai"><b>Cerebras</b><br/>Llama 3.3, Qwen</a></td>
 <td align="center" width="180"><a href="https://cloud.sambanova.ai"><b>SambaNova</b><br/>Llama 3.3 70B</a></td>
 </tr>
 <tr>
 <td align="center"><a href="https://build.nvidia.com"><b>NVIDIA</b><br/>NIM catalog</a></td>
-<td align="center"><a href="https://mistral.ai"><b>Mistral</b><br/>La Plateforme</a></td>
 <td align="center"><a href="https://openrouter.ai"><b>OpenRouter</b><br/>Free-tier models</a></td>
 <td align="center"><a href="https://github.com/marketplace/models"><b>GitHub Models</b><br/>GPT-4o, Llama, Phi</a></td>
 </tr>
 <tr>
 <td align="center"><a href="https://huggingface.co"><b>Hugging Face</b><br/>Inference Providers</a></td>
-<td align="center"><a href="https://cohere.com"><b>Cohere</b><br/>Command R+ (trial)</a></td>
 <td align="center"><a href="https://developers.cloudflare.com/workers-ai"><b>Cloudflare</b><br/>Workers AI</a></td>
 <td align="center"><a href="https://bigmodel.cn"><b>Zhipu</b><br/>GLM-4 series</a></td>
 </tr>
 <tr>
 <td align="center"><a href="https://platform.moonshot.cn"><b>Moonshot</b><br/>Kimi</a></td>
 <td align="center"><a href="https://platform.minimax.io"><b>MiniMax</b><br/>abab / hailuo</a></td>
-<td align="center" colspan="2"><i>Adding another? See <a href="#contributing">Contributing</a>.</i></td>
+<td align="center"><i>Adding another? See <a href="#contributing">Contributing</a>.</i></td>
 </tr>
 </table>
 
@@ -207,7 +204,7 @@ final = client.chat.completions.create(
 print(final.choices[0].message.content)
 ```
 
-Works with `stream=True` as well — you'll get `delta.tool_calls` chunks followed by a `finish_reason: "tool_calls"` close. Under the hood, OpenAI-compatible providers (Groq, Cerebras, SambaNova, Mistral, OpenRouter, GitHub Models, HuggingFace, Cloudflare, Cohere compat) get the request passed through; Gemini requests get translated into Google's `functionDeclarations` / `functionResponse` shape and the response is translated back.
+Works with `stream=True` as well — you'll get `delta.tool_calls` chunks followed by a `finish_reason: "tool_calls"` close. Under the hood, OpenAI-compatible providers (Groq, SenseNova, OpenRouter, GitHub Models, HuggingFace, Cloudflare) get the request passed through; Gemini requests get translated into Google's `functionDeclarations` / `functionResponse` shape and the response is translated back.
 
 Every response carries an `X-Routed-Via: <platform>/<model>` header so you can see which provider actually served each call. If a request fell over between providers, you'll also see `X-Fallback-Attempts: N`.
 
@@ -251,7 +248,7 @@ Request volume, success rate, tokens in and out, average latency, and per-provid
                                           │
    ┌──────────────┬────────────┬──────────┴─────────┬─────────────┬──────────┐
    ▼              ▼            ▼                    ▼             ▼          ▼
- Google         Groq        Cerebras           OpenRouter        HF       …10 more
+ Google         Groq        SenseNova           OpenRouter        HF       …10 more
 ```
 
 - **Router** (`server/src/services/router.ts`) — picks a model per request.
@@ -267,7 +264,7 @@ Stacking free tiers has real trade-offs. Be honest with yourself about them:
 
 - **No frontier models.** The free-tier catalog tops out around Llama 3.3 70B, GLM-4.5, Qwen 3 Coder, and Gemini 2.5 Pro. You will not get GPT-5 or Claude Opus class reasoning through this. For hard problems, pay for a real API.
 - **Intelligence degrades as the day progresses.** Your top-ranked models (usually Gemini 2.5 Pro, GPT-4o via GitHub Models) have the lowest daily caps. Once they hit their limits, the router falls down your priority chain to smaller/weaker models. Expect the effective intelligence of the endpoint to drop in the late hours of each day — then reset at UTC midnight.
-- **Latency is highly variable.** Cerebras and Groq are extremely fast; others are not. You get whichever one is available.
+- **Latency is highly variable.** Groq are extremely fast; others are not. You get whichever one is available.
 - **Free tiers can change without notice.** Providers regularly tighten, loosen, or remove free tiers. When that happens you'll see 429s or auth errors until you update the catalog. Re-seed scripts live in `server/src/scripts/`.
 - **No SLA, by definition.** If you need reliability, use a paid provider with a contract.
 - **Local-first.** There's no multi-tenant auth. Run this for yourself; don't expose it to the internet.
@@ -306,18 +303,14 @@ A self-hosted, single-user, personal-use setup was reviewed against each provide
 |---|---|---|
 | Google Gemini | ✅ Likely OK | No adverse clause; proxy for personal use not prohibited. |
 | Groq | ✅ Likely OK | Explicitly permits integrating into a "Customer Application." |
-| Cerebras | ✅ Likely OK | Permitted; don't resell keys. |
-| Mistral | ✅ Likely OK | APIs allowed for personal/internal business use. |
 | OpenRouter | ✅ Likely OK | Private-use only; don't expose the proxy publicly. |
 | Hugging Face | ✅ Likely OK | BYO-key proxying is the documented pattern. |
 | Zhipu | ✅ Likely OK | Explicit "personal, non-commercial research" carve-out. |
 | Moonshot / Kimi | ✅ Likely OK | Competitive-products clause is broad but not aimed at single-user proxies. |
-| SambaNova | ⚠️ Ambiguous | Public terms are silent on APIs. |
 | MiniMax | ⚠️ Ambiguous | Public terms silent. |
 | Cloudflare Workers AI | ⚠️ Ambiguous | No adverse clause found. |
 | NVIDIA NIM | ⚠️ Caution | Free tier is "evaluation only, not production." |
 | GitHub Models | ⚠️ Caution | Free tier scoped to "experimentation." |
-| Cohere | ❌ Avoid | Trial ToS §14 explicitly forbids personal/household use. |
 
 Rules of thumb that keep most providers happy: **one account per provider**, **no reselling**, **no sharing your endpoint with other humans**, **don't hammer a free tier as a paid production backend**. This is informational, not legal advice — read each provider's ToS and make your own call.
 
