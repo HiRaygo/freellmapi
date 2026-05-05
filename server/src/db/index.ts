@@ -134,9 +134,8 @@ function seedModels(db: Database.Database) {
     // GitHub Models — GPT-4o replaced with GPT-5 (same free tier key)
     ['github', 'openai/gpt-5', 'GPT-5 (GitHub)', 1, 7, 'Frontier', 10, 50, null, null, '~18M', 128000],
     // SenseNova
-    ['sensenova', 'sensenova-6.7-flash-lite', 'Sensenova-6.7 Flash', 6, 9, 'Large', 30, null, null, 200000, '~6M', 131072],
-    ['sensenova', 'sensenova-u1-fast', 'Sensenova U1 Fast', 6, 9, 'Large', 30, null, null, 200000, '~6M', 131072],
-    ['sensenova', 'deepseek-v4-flash', 'DeepSeek-v4 Flash', 1, 9, 'Large', 15, null, null, 200000, '~6M', 131072],
+    ['sensenova', 'sensenova-6.7-flash-lite', 'Sensenova-6.7 Flash', 6, 9, 'Large', 30, 8000, null, 200000, '~30M', 131072],
+    ['sensenova', 'deepseek-v4-flash', 'DeepSeek-v4 Flash', 1, 9, 'Large', 15, 800, null, 200000, '~3M', 131072],
     // Groq — scout TPM corrected to 6k (not 30k)
     ['groq', 'llama-3.3-70b-versatile', 'Llama 3.3 70B', 9, 2, 'Medium', 30, 1000, 6000, 500000, '~15M', 131072],
     ['groq', 'llama-4-scout-17b-16e-instruct', 'Llama 4 Scout', 10, 2, 'Medium', 30, 1000, 6000, 1000000, '~30M', 131072],
@@ -337,9 +336,9 @@ function migrateModelsV3Ranks(db: Database.Database) {
     [9,  'openrouter',  'nvidia/nemotron-3-super-120b-a12b:free'],        // SWE-V 53.7%
     [10, 'minimax',     'MiniMax-M1'],                                    // M1 predecessor, ~45-55%
     // #11-15 mid-tier specialists
-    [11, 'sensenova',   'sensenova-u1-fast'], 
-    [12, 'google',      'gemini-2.5-flash'],
-    [13, 'zhipu',       'glm-4.7-flash'],
+    [11, 'google',      'gemini-2.5-flash'],
+    [12, 'zhipu',       'glm-4.7-flash'],
+    [13, 'zhipu',       'glm-4.5-flash'],
     // #16 Llama 3.3 70B — identical weights across providers (tie)
     [14, 'groq',        'llama-3.3-70b-versatile'],
     [15, 'openrouter',  'meta-llama/llama-3.3-70b-instruct:free'],
@@ -427,10 +426,9 @@ function migrateModelsV4(db: Database.Database) {
     ['openrouter', 'meta-llama/llama-3.3-70b-instruct:free', 'Llama 3.3 70B (free)',          17, 9,  'Medium',   20, 200, null, null, '~6M', 131072],
 
     // sensenova — 20 RPM / 20 RPD / 200K TPD shared free Developer tier
-    ['sensenova',  'deepseek-v4-flash',                       'deepseek-v4-flash',             5,  9,  'Frontier', 20, 20,  null, 200000, '~3M', 131072],
-    ['sensenova',  'sensenova-6.7-flash-lite',                'sensenova-6.7-flash-lite',      4,  9,  'Frontier', 20, 20,  null, 200000, '~3M', 131072],
-    ['sensenova',  'sensenova-u1-fast',                       'sensenova-u1-fast',             11, 9,  'Large',    20, 20,  null, 200000, '~3M', 8192],
-
+    ['sensenova',  'deepseek-v4-flash',                       'deepseek-v4-flash',             5,  9,  'Frontier', 20, 800,  null, 200000, '~3M', 131072],
+    ['sensenova',  'sensenova-6.7-flash-lite',                'sensenova-6.7-flash-lite',      4,  9,  'Frontier', 20, 8000,  null, 200000, '~30M', 131072],
+  
     // Groq — very fast; 30 RPM per model, 1000 RPD on most, 14.4k on the 8B
     ['groq',       'openai/gpt-oss-120b',                    'GPT-OSS 120B (Groq)',           6,  2,  'Large',    30, 1000, 8000, 200000,  '~6M',  131072],
     ['groq',       'openai/gpt-oss-20b',                     'GPT-OSS 20B (Groq)',            18, 2,  'Medium',   30, 1000, 8000, 200000,  '~6M',  131072],
@@ -470,8 +468,8 @@ function migrateModelsV4(db: Database.Database) {
     [3,  'openrouter',  'qwen/qwen3-next-80b-a3b-instruct:free'],
     [4,  'sensenova',   'deepseek-v4-flash'],
     [5,  'sensenova',   'sensenova-6.7-flash-lite'],
-    [6,  'sensenova',   'sensenova-u1-fast'],
-    [7,  'zhipu',       'glm-4.7-flash'],
+    [6,  'zhipu',       'glm-4.7-flash'],
+    [7,  'zhipu',       'glm-4.5-flash'],
     [8,  'openrouter',  'openai/gpt-oss-120b:free'],
     [9,  'groq',        'openai/gpt-oss-120b'],
     [10, 'cloudflare',  '@cf/openai/gpt-oss-120b'],
@@ -488,9 +486,6 @@ function migrateModelsV4(db: Database.Database) {
     [21, 'github',      'openai/gpt-4.1'],
     [22, 'openrouter',  'nvidia/nemotron-3-super-120b-a12b:free'],
     [23, 'openrouter',  'nvidia/nemotron-3-nano-30b-a3b:free'],
-    [24, 'zhipu',       'glm-4.5-flash'],
-    [25, 'github',      'gpt-4o'],
-    [26, 'google',      'gemini-2.5-flash-lite'],
   ];
   const applyRanks = db.transaction(() => {
     for (const [r, p, m] of ranks) setRank.run(r, p, m);
